@@ -1,12 +1,4 @@
 import { PiniaPluginContext } from 'pinia'
-import Taro from '@tarojs/taro'
-console.log('🚀 ~ file: index.ts:3 ~ Taro', Taro)
-
-setTimeout(() => {
-  import('@tarojs/taro').then((res) => {
-    console.log('🚀 ~ file: index.ts:8 ~ import ~ myTaro', res)
-  })
-}, 1500)
 
 const isH5 = typeof alert === 'function'
 
@@ -48,12 +40,12 @@ const updateStorage = (strategy: PersistStrategy, store: Store, options?: Persis
     if (isCustomStorage && storage) {
       storage.setItem(storeKey, JSON.stringify(partialState))
     } else {
-      Taro.setStorage({ key: storeKey, data: JSON.stringify(partialState) })
+      console.warn('storage not exist')
     }
   } else if (isCustomStorage && storage) {
     storage.setItem(storeKey, JSON.stringify(store.$state))
   } else {
-    Taro.setStorage({ key: storeKey, data: JSON.stringify(store.$state) })
+    console.warn('storage not exist')
   }
 }
 
@@ -77,7 +69,7 @@ export default ({ options, store }: PiniaPluginContext): void => {
       if (isH5 || options.persist?.enforceCustomStorage) {
         storageResult = storage.getItem(storeKey)
       } else {
-        storageResult = Taro.getStorageSync(storeKey)
+        console.warn('storage not exist')
       }
 
       if (storageResult) {

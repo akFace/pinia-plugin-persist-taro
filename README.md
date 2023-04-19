@@ -68,8 +68,24 @@ createApp({}).use(pinia).mount('#app')
 请配置 id，用于持久化存储时的 key。
 
 ```typescript
+// storage.ts
+import { setStorageSync, getStorageSync } from '@tarojs/taro'
+
+export default {
+  setItem: (key: string, data: any) => {
+    setStorageSync(key, data)
+  },
+  getItem: (key: string) => {
+    return getStorageSync(key)
+  },
+}
+```
+
+```typescript
 // store/user.ts
 import { defineStore } from 'pinia'
+// 引入缓存
+import storage from "./storage";
 
 export const useUserStore = defineStore('storeUser', {
   state: () => {
@@ -86,7 +102,21 @@ export const useUserStore = defineStore('storeUser', {
     },
   },
   persist: {
+    //这里存储默认使用的是session
     enabled: true,
+    // 开启自定义缓存
+    enforceCustomStorage: true,
+    strategies: [
+      {
+        // 传入自定义的缓存
+        storage: storage as Storage,
+        //key的名称
+        key: "mini-user-data",
+        // 可以选择哪些进入local存储，这样就不用全部都进去存储了
+        // 默认是全部进去存储
+        paths: ["firstName"],
+      },
+    ],
   },
 })
 ```
